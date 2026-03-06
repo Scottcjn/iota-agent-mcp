@@ -1,5 +1,8 @@
 # iota-agent-mcp
 
+[![BCOS Certified](https://img.shields.io/badge/BCOS-Certified-brightgreen?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MXoiLz48L3N2Zz4=)](https://github.com/Scottcjn/Rustchain/blob/main/BCOS.md)
+
+
 MCP (Model Context Protocol) server for IOTA blockchain. Enables AI coding agents (Claude Code, Cursor, VS Code Copilot, ChatGPT) to interact directly with the IOTA network.
 
 ## Tools
