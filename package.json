@@ -28,7 +28,7 @@
   "author": "Elyan Labs <scott@elyanlabs.ai>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
