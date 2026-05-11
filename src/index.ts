@@ -19,6 +19,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { pathToFileURL } from "url";
 
 const execAsync = promisify(exec);
 
@@ -103,6 +104,8 @@ async function wallet(path: string, method = "GET", body?: unknown): Promise<str
 function text(t: string) {
   return { content: [{ type: "text" as const, text: t }] };
 }
+
+export { gql, rpc, run, text, wallet };
 
 // ---------------------------------------------------------------------------
 // Server
@@ -334,7 +337,9 @@ async function main() {
   await server.connect(transport);
 }
 
-main().catch((err) => {
-  console.error("Fatal:", err);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((err) => {
+    console.error("Fatal:", err);
+    process.exit(1);
+  });
+}
