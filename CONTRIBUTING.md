@@ -57,7 +57,7 @@ All merged contributions earn RTC tokens! See [RustChain Bounties](https://githu
 ## Getting Help
 
 - **GitHub Issues**: Bug reports and feature requests
-- **Discord**: [Join our server](https://discord.gg/)
+- **Discord**: [Join our server](https://discord.gg/VqVVS2CW9Q)
 
 ## License
 
