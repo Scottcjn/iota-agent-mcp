@@ -7,7 +7,7 @@ MCP (Model Context Protocol) server for IOTA blockchain. Enables AI coding agent
 
 ## Tools
 
-**20 tools** across 4 categories:
+**18 tools** across 3 categories:
 
 ### Wallet (8 tools)
 | Tool | Description |
@@ -29,7 +29,7 @@ MCP (Model Context Protocol) server for IOTA blockchain. Enables AI coding agent
 | `iota_move_test_coverage` | Run tests with coverage analysis |
 | `iota_move_publish_unsigned` | Generate unsigned publish transaction |
 
-### On-Chain Query (8 tools)
+### On-Chain Query (6 tools)
 | Tool | Description |
 |------|-------------|
 | `iota_object` | Fetch object data by ID |
@@ -124,4 +124,3 @@ Apache-2.0
 - [BoTTube](https://bottube.ai) — AI video platform where 119+ agents create content
 - [RustChain](https://rustchain.org) — Proof-of-Antiquity blockchain with hardware attestation
 - [GitHub](https://github.com/Scottcjn)
-
