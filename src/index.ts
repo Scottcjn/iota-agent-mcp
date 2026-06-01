@@ -17,11 +17,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { pathToFileURL } from "url";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -37,10 +37,39 @@ const MAX_BUFFER = 10 * 1024 * 1024; // 10MB
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Run a shell command with timeout and buffer limits. */
-async function run(cmd: string, cwd?: string): Promise<string> {
+/**
+ * Tokenize a free-form CLI argument string into argv WITHOUT shell semantics.
+ * Quoted segments are preserved; everything else splits on whitespace. Tokens
+ * are passed as literal args to execFile, so shell metacharacters are inert.
+ */
+export function tokenizeArgs(input: string): string[] {
+  const out: string[] = [];
+  let cur = "";
+  let quote: string | null = null;
+  let started = false;
+  for (const c of input) {
+    if (quote) {
+      if (c === quote) quote = null;
+      else cur += c;
+      started = true;
+    } else if (c === '"' || c === "'") {
+      quote = c;
+      started = true;
+    } else if (c === " " || c === "\t" || c === "\n" || c === "\r") {
+      if (started) { out.push(cur); cur = ""; started = false; }
+    } else {
+      cur += c;
+      started = true;
+    }
+  }
+  if (started) out.push(cur);
+  return out;
+}
+
+/** Run the `iota` binary with an explicit argv array — NO shell (closes RCE). */
+async function run(args: string[], cwd?: string): Promise<string> {
   try {
-    const { stdout, stderr } = await execAsync(cmd, {
+    const { stdout, stderr } = await execFileAsync("iota", args, {
       cwd,
       maxBuffer: MAX_BUFFER,
       timeout: CMD_TIMEOUT,
@@ -190,7 +219,7 @@ server.tool(
   {
     command: z.string().describe("CLI arguments (e.g. 'client gas' or 'move new my_project')"),
   },
-  async ({ command }) => text(await run(`iota ${command}`))
+  async ({ command }) => text(await run(tokenizeArgs(command)))
 );
 
 server.tool(
@@ -199,7 +228,7 @@ server.tool(
   {
     path: z.string().optional().describe("Path to Move package directory (default: current dir)"),
   },
-  async ({ path }) => text(await run("iota move build", path || undefined))
+  async ({ path }) => text(await run(["move", "build"], path || undefined))
 );
 
 server.tool(
@@ -210,9 +239,12 @@ server.tool(
     filter: z.string().optional().describe("Test name filter pattern"),
   },
   async ({ path, filter }) => {
-    const filterArg = filter ? ` --filter ${filter}` : "";
-    const testResult = await run(`iota move test --coverage${filterArg}`, path || undefined);
-    const coverageResult = await run("iota move coverage summary", path || undefined);
+    if (filter !== undefined && !/^[A-Za-z0-9_:.\-]+$/.test(filter)) {
+      return text("Error: invalid filter (allowed: letters, digits, _ : . -)");
+    }
+    const testArgs = ["move", "test", "--coverage", ...(filter ? ["--filter", filter] : [])];
+    const testResult = await run(testArgs, path || undefined);
+    const coverageResult = await run(["move", "coverage", "summary"], path || undefined);
     return text(`## Test Results\n${testResult}\n\n## Coverage Summary\n${coverageResult}`);
   }
 );
@@ -226,9 +258,12 @@ server.tool(
   },
   async ({ path, gas_budget }) => {
     const budget = gas_budget || "500000000";
+    if (!/^[1-9][0-9]*$/.test(budget)) {
+      return text("Error: gas_budget must be a positive integer (NANOS)");
+    }
     return text(
       await run(
-        `iota client publish --gas-budget ${budget} --serialize-unsigned-transaction`,
+        ["client", "publish", "--gas-budget", budget, "--serialize-unsigned-transaction"],
         path || undefined
       )
     );
