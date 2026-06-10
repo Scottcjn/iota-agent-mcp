@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /**
  * iota-agent-mcp — Tool registration & configuration tests
  *

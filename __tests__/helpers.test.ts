@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import { gql, rpc, text, wallet } from "../src/index";
 

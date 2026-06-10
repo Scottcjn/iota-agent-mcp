@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /** @type {import('jest').Config} */
 export default {
   preset: "ts-jest/presets/default-esm",

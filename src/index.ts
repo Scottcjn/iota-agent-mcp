@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
 /**
  * iota-agent-mcp — MCP Server for IOTA Blockchain
  *

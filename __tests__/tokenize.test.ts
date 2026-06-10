@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /**
  * Security test: tokenizeArgs must split free-form CLI input into argv with
  * NO shell semantics. Shell metacharacters become inert literal arguments,
