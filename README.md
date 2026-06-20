@@ -41,19 +41,23 @@ MCP (Model Context Protocol) server for IOTA blockchain. Enables AI coding agent
 
 ## Architecture
 
-```
-┌──────────────────────┐     stdio      ┌──────────────────────┐
-│  AI Agent (Claude,   │ ◀────────────▶ │  iota-agent-mcp      │
-│  Cursor, VS Code)    │                │  (this server)       │
-└──────────────────────┘                └───┬──────┬──────┬────┘
-                                            │      │      │
-                                    HTTP    │  RPC │  GQL │
-                                            ▼      ▼      ▼
-                                   ┌────────┐ ┌────────┐ ┌────────┐
-                                   │ Agent  │ │  IOTA  │ │  IOTA  │
-                                   │ Wallet │ │  Node  │ │  GQL   │
-                                   │:3847   │ │  RPC   │ │Indexer │
-                                   └────────┘ └────────┘ └────────┘
+```mermaid
+flowchart LR
+    client["AI coding agent<br/>Claude Code, Cursor, VS Code Copilot, ChatGPT"]
+    mcp["iota-agent-mcp<br/>stateless stdio MCP server"]
+    wallet["Local agent-wallet server<br/>IOTA_WALLET_SERVER<br/>default http://localhost:3847"]
+    rpc["IOTA JSON-RPC fullnode<br/>IOTA_RPC_URL<br/>default https://api.mainnet.iota.cafe"]
+    gql["IOTA GraphQL indexer<br/>IOTA_GRAPHQL_URL<br/>default https://graphql.mainnet.iota.cafe"]
+    cli["iota CLI and Move toolchain<br/>build, test, unsigned publish"]
+    rustchain["RustChain / Elyan Labs ecosystem<br/>BCOS and agent workflow context"]
+
+    client <-->|"MCP over stdio"| mcp
+    mcp -->|"wallet address, balance, accounts"| wallet
+    mcp -->|"sign / approve / reject requests"| wallet
+    mcp -->|"object, transaction, coins"| rpc
+    mcp -->|"epoch and network stats"| gql
+    mcp -->|"execFile without shell"| cli
+    rustchain -. "ecosystem docs and certification" .- mcp
 ```
 
 - **Stateless** — no secrets in the MCP process
