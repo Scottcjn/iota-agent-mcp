@@ -297,7 +297,8 @@ server.tool(
   },
   async ({ address, limit }) =>
     text(
-      await rpc("iota_getOwnedObjects", [
+      // Owned-objects lives in the extended API namespace (iotax_), not iota_.
+      await rpc("iotax_getOwnedObjects", [
         address,
         { filter: null, options: { showType: true, showContent: true } },
         null,
@@ -329,7 +330,8 @@ server.tool(
     coin_type: z.string().optional().describe("Coin type (default: 0x2::iota::IOTA)"),
   },
   async ({ address, coin_type }) =>
-    text(await rpc("iota_getCoins", [address, coin_type || null, null, 10]))
+    // Coin queries live in the extended API namespace (iotax_), not iota_.
+    text(await rpc("iotax_getCoins", [address, coin_type || null, null, 10]))
 );
 
 server.tool(
